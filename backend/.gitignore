@@ -1,0 +1,79 @@
+# .NET Core
+**/bin/
+**/obj/
+*.exe
+*.dll
+*.pdb
+*.xml
+*.cache
+*.config
+*.user
+*.vspscc
+*.suo
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# NuGet Packages
+**/packages/*
+*.nupkg
+.nuget/
+nuget.exe
+
+# Local development
+/.vs/
+/.vscode/
+/.idea/
+/.azure/
+/.dotnet/
+/.toolstargets/
+/local.settings.json
+
+# User-specific files
+*.userprefs
+*.usertest
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# IDE specific
+.vs/
+_ReSharper.*/
+*.sln.iml
+*.csproj.user
+
+# Docker
+**/docker-compose*.yml
+**/Dockerfile*
+**/.dockerignore
+
+# macOS
+.DS_Store
+
+# Node.js (if using front-end)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Coverage
+coverage/
+*.coverage
+*.coverage.xml
+
+# Local development certificates
+*.pfx
+*.pem
