@@ -7,6 +7,8 @@ using Domain.Entities;
 using Domain.Repositories;
 using Domain.ValueObject;
 using Infrastructure.Data;
+using Infrastructure.Message.Producer;
+using Infrastructure.ValueObject;
 using Microsoft.EntityFrameworkCore;
 using Nest;
 
@@ -17,12 +19,14 @@ namespace Infrastructure.Repositories
         private readonly ApplicationDbContext _context;
         private readonly DbSet<ConstructionProject> _dbSet;
         private readonly ElasticClient _elasticClient;
+        private readonly KafkaProducer _kafkaProducer;
 
-        public ConstructionProjectRepository(ApplicationDbContext context, ElasticClient elasticClient) : base(context)
+        public ConstructionProjectRepository(ApplicationDbContext context, ElasticClient elasticClient, KafkaProducer kafkaProducer) : base(context) // Modify constructor
         {
             _context = context;
             _dbSet = context.Set<ConstructionProject>();
             _elasticClient = elasticClient;
+            _kafkaProducer = kafkaProducer;
         }
 
         public async Task<IEnumerable<ConstructionProject>> GetAllElasticAsync(int pageNumber, int pageSize, string searchString)
@@ -86,9 +90,19 @@ namespace Infrastructure.Repositories
         {
             entity = await this.AddAsync(entity);
             //add to elastic in the background
-            Task.Run(() => {
-                _elasticClient.Index<ConstructionProject>(entity, i => i.Id(entity.ProjectId));
+            Task.Run(async () =>
+            {
+                var message = new MessageObject
+                {
+                    action = "create",
+                    project = entity
+                };
+                await _kafkaProducer.ProduceAsync(message, CancellationToken.None);
             });
+            //Task.Run(() =>
+            //{
+            //    _elasticClient.Index<ConstructionProject>(entity, i => i.Id(entity.ProjectId));
+            //});
             return entity;
         }
 
@@ -96,16 +110,35 @@ namespace Infrastructure.Repositories
         {
             await this.UpdateAsync(entity);
             // update in elastic in the background
-            Task.Run(() => {
-                _elasticClient.Index<ConstructionProject>(entity, i => i.Id(entity.ProjectId));
+            Task.Run(async () =>
+            {
+                var message = new MessageObject
+                {
+                    action = "update",
+                    project = entity
+                };
+                await _kafkaProducer.ProduceAsync(message, CancellationToken.None);
             });
+            //Task.Run(() =>
+            //{
+            //    _elasticClient.Index<ConstructionProject>(entity, i => i.Id(entity.ProjectId));
+            //});
         }
 
         public async Task DeleteAsyncAndElastic(int id)
         {
             await this.DeleteAsync(id);
+            Task.Run(async () =>
+            {
+                var message = new MessageObject
+                {
+                    action = "delete",
+                    id = id
+                };
+                await _kafkaProducer.ProduceAsync(message, CancellationToken.None);
+            });
             // delete from elastic in the background
-            Task.Run(() => _elasticClient.Delete<ConstructionProject>(id));
+            //Task.Run(() => _elasticClient.Delete<ConstructionProject>(id));
         }
     }
 

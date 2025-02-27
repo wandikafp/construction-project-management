@@ -40,7 +40,7 @@ namespace Domain.Entities
 
         [Required]
         public Guid CreatorId { get; set; }
-        public virtual User Creator { get; set; }
+        public virtual User? Creator { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

@@ -41,7 +41,7 @@ namespace Application.Mapper
                 OtherCategory = project.OtherCategory,
                 ProjectDetails = project.ProjectDetails,
                 CreatorId = project.CreatorId,
-                Creator = MapToUserResponse(project.Creator),
+                Creator = project.Creator != null ? MapToUserResponse(project.Creator): null,
             };
         }
 

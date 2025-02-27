@@ -5,8 +5,11 @@ using Application.Mapper;
 using Application.Services;
 using Domain.Repositories;
 using Infrastructure.Data;
+using Infrastructure.Message.Consumer;
+using Infrastructure.Message.Producer;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Nest;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +28,8 @@ builder.Services.AddSingleton<ElasticClient>(sp =>
 // Repository layer
 builder.Services.AddScoped<IConstructionProjectRepository, ConstructionProjectRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<KafkaProducer>();
+builder.Services.AddHostedService<KafkaConsumer>();
 // Service layer
 builder.Services.AddScoped<IConstructionProjectService, ConstructionProjectService>();
 builder.Services.AddScoped<IConstructionProjectMapper, ConstructionProjectMapper>();
